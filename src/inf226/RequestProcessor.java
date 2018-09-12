@@ -208,7 +208,7 @@ public final class RequestProcessor extends Thread {
 		/**
 		 * Handle a login request.
 		 * @param in Request input.
-		 * @return User object as a result of a successfu login.
+		 * @return User object as a result of a successful login.
 		 * @throws IOException If the user hangs up unexpectedly.
 		 */
 		private static Maybe<Stored<User>> handleLogin(final BufferedReader in) throws IOException {

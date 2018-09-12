@@ -8,6 +8,7 @@ import inf226.Storage.KeyedStorage;
 import inf226.Storage.Storage.ObjectDeletedException;
 import inf226.Storage.Stored;
 import inf226.Storage.TransientStorage;
+import inf226.exceptions.InvalidInputException;
 
 /**
  * 
@@ -30,7 +31,11 @@ public class Server {
 	}
 
 	public static Maybe<Stored<User>> register(String username, String password) {
-		// TODO: Implement user registration 
+		// TODO: Implement user registration
+
+
+		System.out.println("User registering failed, invalid username/password");
+
 		return Maybe.nothing();
 	}
 	
@@ -43,14 +48,21 @@ public class Server {
 		return Maybe.nothing();
 	}
 
-	public static Maybe<String> validateUsername(String username) {
+	public static Maybe<String> validateUsername(String username){
 		// TODO: Validate username before returning
+		String pattern = "[a-zA-Z0-9]{4,32}";
+		boolean match = username.matches(pattern);
+		if (!match) return Maybe.nothing();
+
 		return Maybe.just(username);
 	}
 
-	public static Maybe<String> validatePassword(String pass) {
+	public static Maybe<String> validatePassword(String pass){
 		// TODO: Validate pass before returning
-		// This method only checks that the password contains a safe string.
+		String pattern = "[a-zA-Z0-9.,:;()\\[\\]{}<>\"'#!$%&/+*?=\\-_|]{8,40}";
+		boolean match = pass.matches(pattern);
+		if (!match) return Maybe.nothing();
+
 		return Maybe.just(pass);
 	}
 
