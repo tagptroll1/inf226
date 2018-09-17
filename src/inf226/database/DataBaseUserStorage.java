@@ -1,13 +1,11 @@
-package inf226;
+package inf226.database;
 
+import inf226.Maybe;
 import inf226.Storage.KeyedStorage;
 import inf226.Storage.Stored;
 
-import javax.xml.transform.Result;
 import java.io.IOException;
-import java.sql.*;
 import java.util.HashMap;
-import java.util.Hashtable;
 
 public class DataBaseUserStorage<K, C> implements KeyedStorage<K, C>
 {

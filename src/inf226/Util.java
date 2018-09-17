@@ -3,6 +3,11 @@ package inf226;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.EOFException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
 /**
  * Utility functions to insulate the rest of the code from NullPointerException.
  * @author INF226
@@ -46,7 +51,28 @@ public class Util {
 		return messageSelection;
 	}
 
-	public static String bytesToHex(byte[] hash){
+	public static String salt(SecureRandom randomer){
+		byte[] byteSalt = new byte[16];
+		randomer.nextBytes(byteSalt);
+		return bytesToHex(byteSalt);
+	}
+
+	public static String sha256(String originalString){
+		MessageDigest digest = null;
+		try {
+			digest = MessageDigest.getInstance("SHA-256");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			// TODO Logging
+		}
+
+		byte[] encodedHash = digest.digest(
+				originalString.getBytes(StandardCharsets.UTF_8));
+
+		return bytesToHex(encodedHash);
+	}
+
+	private static String bytesToHex(byte[] hash){
 		StringBuffer hexString = new StringBuffer();
 
 		for(byte chr:hash){
@@ -55,6 +81,10 @@ public class Util {
 			hexString.append(hex);
 		}
 		return hexString.toString();
+	}
+
+	public static boolean isAscii(char ch) {
+		return ch < 128;
 	}
 
 }

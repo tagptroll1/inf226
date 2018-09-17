@@ -5,12 +5,14 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.function.Function;
 
 import inf226.Storage.KeyedStorage;
 import inf226.Storage.Storage.ObjectDeletedException;
 import inf226.Storage.Stored;
 import inf226.Storage.TransientStorage;
+import inf226.database.UserBase;
 import inf226.exceptions.InvalidInputException;
 
 /**
@@ -21,6 +23,7 @@ import inf226.exceptions.InvalidInputException;
  *
  */
 public class Server {
+	private static SecureRandom random = new SecureRandom();
 	private static final int portNumber = 1337;
 	private SQLiteJDBCConnection db = new SQLiteJDBCConnection();
 	private static final KeyedStorage<String,User> storage
@@ -36,8 +39,16 @@ public class Server {
 
 	public static Maybe<Stored<User>> register(String username, String password) {
 		// TODO: Implement user registration
+		String salt = Util.salt(random);
+		String pass = Util.sha256(password+salt);
+		password = null;
+
+		// Hashing has to happen here to pass the salt on given the signature of the task..
+		//UserBase.registerUser(username, pass, salt);
+
 		User user = new User(username);
 		try{
+			System.out.println(pass);
 			return Maybe.just(storage.save(user));
 		} catch (IOException e){
 			System.out.println(e);
@@ -70,26 +81,14 @@ public class Server {
 		String pattern = "[a-zA-Z0-9.,:;()\\[\\]{}<>\"'#!$%&/+*?=\\-_|]{8,40}";
 		boolean match = pass.matches(pattern);
 
-		System.out.println(pass);
 		if (!match) return Maybe.nothing();
-
-		try {
-			byte[] passwordHash = MessageDigest.getInstance("SHA-256").digest(
-					pass.getBytes(StandardCharsets.UTF_8)
-			);
-			pass = Util.bytesToHex(passwordHash);
-
-		} catch (NoSuchAlgorithmException e) {
-			// TODO: Logging
-			System.out.println("Something went wrong");
-		}
 
 		return Maybe.just(pass);
 	}
 
-	public static Maybe<Stored<User>> sendMessage(Stored<User> sender, Message message) {
+	public static boolean sendMessage(Stored<User> sender, Message message) {
 		// TODO: Implement the message sending.
-		return Maybe.nothing();
+		return false;
 	}
 	
 	/**
