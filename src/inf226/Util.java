@@ -46,4 +46,15 @@ public class Util {
 		return messageSelection;
 	}
 
+	public static String bytesToHex(byte[] hash){
+		StringBuffer hexString = new StringBuffer();
+
+		for(byte chr:hash){
+			String hex = Integer.toHexString(0xff&chr);
+			if(hex.length() == 1) hexString.append("0");
+			hexString.append(hex);
+		}
+		return hexString.toString();
+	}
+
 }

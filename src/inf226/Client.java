@@ -29,12 +29,13 @@ public class Client {
 		System.out.println("request and validate session IDs.");
 		System.out.println();
 		try (final Socket socket = new Socket(hostname,portNumber);
-			 final BufferedReader serverIn
-			   = new BufferedReader
-			   ( new InputStreamReader
-			   ( socket.getInputStream()));
-		 	final BufferedWriter serverOut 
-			   = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
+			 final BufferedReader serverIn = new BufferedReader(
+			 		new InputStreamReader(socket.getInputStream())
+			 );
+		 	final BufferedWriter serverOut = new BufferedWriter(
+		 			new OutputStreamWriter(socket.getOutputStream())
+			)
+		) {
 			System.out.println("Connected to server. What do you want to do?");
 			mainMenu(serverIn, serverOut);
 		} catch (IOException e) {

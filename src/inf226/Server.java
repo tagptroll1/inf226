@@ -2,6 +2,9 @@ package inf226;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.function.Function;
 
 import inf226.Storage.KeyedStorage;
@@ -19,6 +22,7 @@ import inf226.exceptions.InvalidInputException;
  */
 public class Server {
 	private static final int portNumber = 1337;
+	private SQLiteJDBCConnection db = new SQLiteJDBCConnection();
 	private static final KeyedStorage<String,User> storage
 	  = new TransientStorage<String,User>
 	         (new Function<User,String>()
@@ -32,9 +36,13 @@ public class Server {
 
 	public static Maybe<Stored<User>> register(String username, String password) {
 		// TODO: Implement user registration
+		User user = new User(username);
+		try{
+			return Maybe.just(storage.save(user));
+		} catch (IOException e){
+			System.out.println(e);
 
-
-		System.out.println("User registering failed, invalid username/password");
+		}
 
 		return Maybe.nothing();
 	}
@@ -61,7 +69,20 @@ public class Server {
 		// TODO: Validate pass before returning
 		String pattern = "[a-zA-Z0-9.,:;()\\[\\]{}<>\"'#!$%&/+*?=\\-_|]{8,40}";
 		boolean match = pass.matches(pattern);
+
+		System.out.println(pass);
 		if (!match) return Maybe.nothing();
+
+		try {
+			byte[] passwordHash = MessageDigest.getInstance("SHA-256").digest(
+					pass.getBytes(StandardCharsets.UTF_8)
+			);
+			pass = Util.bytesToHex(passwordHash);
+
+		} catch (NoSuchAlgorithmException e) {
+			// TODO: Logging
+			System.out.println("Something went wrong");
+		}
 
 		return Maybe.just(pass);
 	}
@@ -89,6 +110,7 @@ public class Server {
 	 * @param args TODO: Parse args to get port number
 	 */
 	public static void main(String[] args) {
+		SQLiteJDBCConnection.ensureTablesExist();
 		final RequestProcessor processor = new RequestProcessor();
 		System.out.println("Staring authentication server");
 		processor.start();
