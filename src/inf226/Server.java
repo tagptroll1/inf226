@@ -12,6 +12,7 @@ import inf226.Storage.KeyedStorage;
 import inf226.Storage.Storage.ObjectDeletedException;
 import inf226.Storage.Stored;
 import inf226.Storage.TransientStorage;
+import inf226.Storage.Triplet;
 import inf226.database.UserBase;
 import inf226.exceptions.InvalidInputException;
 
@@ -24,8 +25,8 @@ import inf226.exceptions.InvalidInputException;
  */
 public class Server {
 	private static SecureRandom random = new SecureRandom();
+	private static UserBase userdb = new UserBase();
 	private static final int portNumber = 1337;
-	private SQLiteJDBCConnection db = new SQLiteJDBCConnection();
 	private static final KeyedStorage<String,User> storage
 	  = new TransientStorage<String,User>
 	         (new Function<User,String>()
@@ -34,13 +35,23 @@ public class Server {
 	
 	public static Maybe<Stored<User>> authenticate(String username, String password) {
 		// TODO: Implement user authentication
+		try {
+			User user = new User(username);
+			if (user.checkPassword(userdb, password)){
+				return Maybe.just(storage.save(user));
+			}
+		}catch (IOException ex){
+				ex.printStackTrace();
+		}
+
+
 		return Maybe.nothing();
 	}
 
 	public static Maybe<Stored<User>> register(String username, String password) {
 		// TODO: Implement user registration
 		String salt = Util.salt(random);
-		String pass = Util.sha256(password+salt);
+		String pass = Util.sha256(password, salt);
 		password = null;
 
 		// Hashing has to happen here to pass the salt on given the signature of the task..
@@ -48,7 +59,8 @@ public class Server {
 
 		User user = new User(username);
 		try{
-			System.out.println(pass);
+            userdb.save(new Triplet(user, pass, salt));
+            System.out.println(pass);
 			return Maybe.just(storage.save(user));
 		} catch (IOException e){
 			System.out.println(e);
@@ -109,7 +121,6 @@ public class Server {
 	 * @param args TODO: Parse args to get port number
 	 */
 	public static void main(String[] args) {
-		SQLiteJDBCConnection.ensureTablesExist();
 		final RequestProcessor processor = new RequestProcessor();
 		System.out.println("Staring authentication server");
 		processor.start();

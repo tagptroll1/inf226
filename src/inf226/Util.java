@@ -57,7 +57,8 @@ public class Util {
 		return bytesToHex(byteSalt);
 	}
 
-	public static String sha256(String originalString){
+	public static String sha256(String originalString, String salt){
+		originalString = originalString + salt;
 		MessageDigest digest = null;
 		try {
 			digest = MessageDigest.getInstance("SHA-256");

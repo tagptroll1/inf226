@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 
 import inf226.Maybe.NothingException;
 import inf226.Storage.Stored;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;

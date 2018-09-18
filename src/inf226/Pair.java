@@ -25,4 +25,12 @@ public class Pair<T1, T2> {
 				return arg0.second;
 			}};
 	}
+
+	public T1 getFirst(){
+		return this.first;
+	}
+
+	public T2 getSecond(){
+		return this.second;
+	}
 }

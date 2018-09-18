@@ -1,11 +1,13 @@
 package inf226;
 
+import inf226.database.UserBase;
+
 /**
  * Immutable class for users.
  * @author INF226
  *
  */
-public final class User {
+public final class User{
 	
 	private final String name;
 	private final ImmutableLinkedList<Message> log;
@@ -28,7 +30,12 @@ public final class User {
 	public String getName() {
 		return name;
 	}
-	
+
+
+	public boolean checkPassword(UserBase db, String password){
+		return db.checkPassword(this.name, password);
+	}
+
 	/**
 	 * @return Messages sent to this user.
 	 */
