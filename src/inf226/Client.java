@@ -141,6 +141,11 @@ public class Client {
 				}
 				if(option == 2) { // SEND
 					// TODO: Implement message sending
+					try {
+						sendMessage(serverOut, serverIn);
+					} catch (InvalidUsername invalidUsername) {
+						invalidUsername.printStackTrace();
+					}
 				}
 				if(option == 3) // QUIT
 					return;
@@ -196,6 +201,26 @@ public class Client {
 		final String response = Util.getLine(serverIn);
 		if (response.startsWith("LOGGED IN ")) {
 			userMenu(serverOut,serverIn);
+		}
+	}
+
+	private static void sendMessage(
+			BufferedWriter serverOut,
+			BufferedReader serverIn) throws IOException, InvalidUsername
+	{
+		System.out.print("Send message to: ");
+		String recipient = Util.getLine(serverIn);
+		System.out.println();
+		String pattern = "[a-zA-Z0-9]{4,32}";
+		boolean match = recipient.matches(pattern);
+		if (!match) throw new InvalidUsername("The username given is not valid");
+
+		System.out.println("Compose your message:");
+		String msgLine = "";
+
+		while (msgLine != "."){
+			msgLine = Util.getLine(serverIn);
+
 		}
 	}
 
@@ -280,5 +305,27 @@ public class Client {
 				return false;
 		}
 		return messageLine.charAt(n-1) == '.';
+	}
+
+}
+class InvalidUsername extends Exception{
+	/**
+	 * Constructs a new exception with {@code null} as its detail message.
+	 * The cause is not initialized, and may subsequently be initialized by a
+	 * call to {@link #initCause}.
+	 */
+	public InvalidUsername() {
+	}
+
+	/**
+	 * Constructs a new exception with the specified detail message.  The
+	 * cause is not initialized, and may subsequently be initialized by
+	 * a call to {@link #initCause}.
+	 *
+	 * @param message the detail message. The detail message is saved for
+	 *                later retrieval by the {@link #getMessage()} method.
+	 */
+	public InvalidUsername(String message) {
+		super(message);
 	}
 }
